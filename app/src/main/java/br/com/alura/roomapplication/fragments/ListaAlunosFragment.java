@@ -3,6 +3,7 @@ package br.com.alura.roomapplication.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -26,6 +27,7 @@ import br.com.alura.roomapplication.models.Aluno;
 public class ListaAlunosFragment extends Fragment {
 
     private AlunosDelegate delegate;
+    private FloatingActionButton botaoAdd;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,7 +55,7 @@ public class ListaAlunosFragment extends Fragment {
     }
 
     private void configuraFAB(View view) {
-        FloatingActionButton botaoAdd = view.findViewById(R.id.fragment_lista_fab);
+        botaoAdd = view.findViewById(R.id.fragment_lista_fab);
         botaoAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,12 +68,12 @@ public class ListaAlunosFragment extends Fragment {
     private void configuraLista(View view) {
         final ListView lista = view.findViewById(R.id.fragment_lista);
 
-        Geradorbd geradorbd = new Geradorbd();
+        final Geradorbd geradorbd = new Geradorbd();
         Database database = geradorbd.gera(getContext());
-        AlunoDao alunoDao = database.getAlunoDao();
+        final AlunoDao alunoDao = database.getAlunoDao();
 
         List<Aluno> alunos = alunoDao.busca();
-        ArrayAdapter<Aluno> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, alunos);
+        final ArrayAdapter<Aluno> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, alunos);
         lista.setAdapter(adapter);
 
         lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -81,6 +83,25 @@ public class ListaAlunosFragment extends Fragment {
 
                 delegate.lidaComAlunoSelecionado(aluno);
 
+            }
+        });
+
+        lista.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int pos, long id) {
+                final Aluno aluno = (Aluno) lista.getItemAtPosition(pos);
+                Snackbar.make(botaoAdd, "Excluir aluno" + aluno.getNome(), Snackbar.LENGTH_SHORT)
+                        .setAction("Sim", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                            alunoDao.deleta(aluno);
+                            adapter.remove(aluno);
+
+                            }
+                        }).show();
+
+
+                return true;
             }
         });
 

@@ -1,6 +1,7 @@
 package br.com.alura.roomapplication.database;
 
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
@@ -15,9 +16,12 @@ public interface AlunoDao {
     @Insert
     void insere(Aluno aluno);
 
-    @Query("select * from Aluno order by nome")
+    @Query("select * from Aluno  order by nome")
     List<Aluno> busca();
 
     @Update
     void altera(Aluno aluno);
+
+    @Delete
+    void deleta(Aluno aluno);
 }
