@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -63,7 +64,7 @@ public class ListaAlunosFragment extends Fragment {
     }
 
     private void configuraLista(View view) {
-        ListView lista = view.findViewById(R.id.fragment_lista);
+        final ListView lista = view.findViewById(R.id.fragment_lista);
 
         Geradorbd geradorbd = new Geradorbd();
         Database database = geradorbd.gera(getContext());
@@ -72,5 +73,17 @@ public class ListaAlunosFragment extends Fragment {
         List<Aluno> alunos = alunoDao.busca();
         ArrayAdapter<Aluno> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, alunos);
         lista.setAdapter(adapter);
+
+        lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
+                Aluno aluno = (Aluno) lista.getItemAtPosition(pos);
+
+                delegate.lidaComAlunoSelecionado(aluno);
+
+            }
+        });
+
+
     }
 }
